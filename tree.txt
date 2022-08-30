@@ -1,0 +1,23 @@
+.
+|-- README.md
+|-- client
+|   |-- client.exe
+|   |-- client.exe~
+|   |-- client.go
+|   |-- data.go
+|   |-- go.mod
+|   |-- login.go
+|   |-- message.go
+|   `-- register.go
+|-- server
+|   |-- broadcast.go
+|   |-- clientAuth.go
+|   |-- data.go
+|   |-- go.mod
+|   |-- go.sum
+|   |-- mysql.go
+|   |-- server.exe
+|   `-- server.go
+`-- tree.txt
+
+2 directories, 18 files
