@@ -1,25 +1,28 @@
 package main
 
-import "log"
+import (
+	"log"
+)
 
 //接收数据
-func (s *Server) recData(c *OnlineClient) {
+func (s *Server) recData(cli *OnlineClient) {
 	for {
-		n, err := c.Conn.Read(c.buf)
+		n, err := cli.Conn.Read(cli.Buf)
 		if err != nil {
-			log.Println("conn.Read failed:", err.Error())
+			cli.Conn.Close()
 		}
-		c.RecData <- string(c.buf[:n])
+		cli.RecData <- string(cli.Buf[:n])
 	}
 }
 
 //发送数据
-func (s *Server) sentData(c *OnlineClient) {
+func (s *Server) sentData(cli *OnlineClient) {
 	//不断地从管道中拿出数据 发送给客户端
 	for {
-		data := <-c.SentData
-		_, err := c.Conn.Write([]byte(data))
+		data := <-cli.SentData
+		_, err := cli.Conn.Write([]byte(data))
 		if err != nil {
+			cli.Conn.Close()
 			log.Println("conn.Write failed:", err.Error())
 		}
 	}
@@ -27,7 +30,7 @@ func (s *Server) sentData(c *OnlineClient) {
 
 //获取当前在线用户名
 func (s *Server) onlineList(name string) string {
-	if len(s.OnlineClients) == 0 {
+	if len(s.OnlineClients) <= 1 {
 		return "当前没有人在线!"
 	} else {
 		onlineList := "当前在线的用户有:"
@@ -41,10 +44,17 @@ func (s *Server) onlineList(name string) string {
 	}
 }
 
-//接收当前用户 的消息并且广播出去
+//将当前用户的信息 放入管道
 func (s *Server) recMessage(cli OnlineClient) {
 	message := <-cli.RecData
 	if len(message) != 0 {
 		s.Message <- message
 	}
 }
+
+//给当前用户发送消息
+//func (s *Server) sentMessage(cli OnlineClient) {
+//	for msg := range cli.CliChanMessage {
+//		cli.Conn.Write([]byte(msg))
+//	}
+//}

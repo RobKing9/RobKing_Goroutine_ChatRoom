@@ -1,6 +1,8 @@
 package main
 
-import "log"
+import (
+	"log"
+)
 
 //发送数据
 func (c *Client) sentData() {
@@ -19,7 +21,9 @@ func (c *Client) recData() {
 	for {
 		n, err := c.Conn.Read(c.buf)
 		if err != nil {
+			c.Conn.Close()
 			log.Println("conn.Read failed:", err.Error())
+			return
 		}
 		c.RecData <- string(c.buf[:n])
 	}

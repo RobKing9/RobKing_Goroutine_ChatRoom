@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
 	"log"
 	"os"
 )
@@ -18,16 +18,15 @@ func (c *Client) recMessage() {
 
 //发送消息
 func (c *Client) sentMessage() {
-	var input string
-	fmt.Print("输入消息以发送:")
 	for {
-		fmt.Scanln(&input)
+		inputReader := bufio.NewReader(os.Stdin)
+		input, _ := inputReader.ReadString('\n')
 		//退出聊天室
 		if input == "quit" {
 			c.SentData <- c.Name + ":" + input
 			input = ""
 			log.Println("欢迎下次使用!")
-			os.Exit(0)
+			return
 		}
 		//发送消息
 		if len(input) != 0 {

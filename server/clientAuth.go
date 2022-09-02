@@ -23,12 +23,14 @@ func (s *Server) clientAuth(c OnlineClient) {
 			c.SentData <- info
 			//登录成功
 			if status == true {
-				s.Message <- "欢迎用户:" + name + "进入聊天室!"
+				s.Message <- "欢迎用户" + name + " 进入聊天室!"
+				c.Name = name
 				//更新在线用户
 				s.OnlineClients[name] = c
 				//给这个用户 发送当前在线用户
 				c.SentData <- s.onlineList(name)
-				//接收该用户发的消息
+				//将当前用户的消息放入管道
+				//以便根据消息内容 才去不同的处理方式
 				go s.recMessage(c)
 				break
 			}
